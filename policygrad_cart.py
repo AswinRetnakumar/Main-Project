@@ -28,7 +28,7 @@ gradient_placeholders = []
 grads_and_vars_feed = []
 
 for gradient, variable in gradients_and_variables:
-    gradients.append[gradient]
+    gradients.append(gradient)
     gradient_placeholders = tf.placeholder(tf.float32, shape = gradient.get_shape())
     gradient_placeholders.append(gradient_placeholders)
     grads_and_vars_feed.append((gradient_placeholders, variable))
@@ -39,3 +39,64 @@ init = tf.global_variables_initializer()
 saver = tf.train.Saver()
 
 
+def helper_discoutn_rewards(rewards, discount_rate):
+
+    discounted_rewards = np.zeros(len(rewards))
+    cumulative_rewards = 0
+    for step in reversed(range(len(rewards))):
+        cumulative_rewards = rewards[step] + cumulative_rewards*discount_rate
+        discounted_rewards[step] = cumulative_rewards
+    return discounted_rewards
+
+def discount_norm_rewards(all_rewards, discount_rate):
+
+    all_discounted_rewards = []
+    for rewards in all_rewards:
+        all_discounted_rewards.append(helper_discoutn_rewards(rewards, discount_rate))
+        
+    flat_rewards = np.concatenate(all_discounted_rewards)
+    reward_mean  = flat_rewards.mean()
+    reward_std = flat_rewards.std()
+    return [(discounted_rewards - reward_mean)/ reward_std for discounted_rewards in all_discounted_rewards]
+
+
+
+env = gym.make("CartPole-v0")
+
+rounds = 10
+game_steps = 1000
+iter = 700
+discount_rate = 0.9
+
+with tf.Session() as sess:
+    sess.run(init)
+
+    for i in range(iter):
+        print("On iteration {}".format(iteration))
+        all_rewards = []
+        all_gradients = []
+
+        for step in range(rounds):
+
+            current_reward = []
+            current_gradient =[]
+
+            obs = env.reset()
+
+            for step in range(game_steps):
+
+                action_val, gradient_val = sess.run([action,gradients], feed_dict= {})
+
+                obs, reward, done, info = env.step(action_val[0][0])
+                current_reward.append(reward)
+                current_gradient.append(gradient_val)
+
+                if done:
+                    break
+            all_rewards.append(current_reward)
+            all_gradients.append(current_gradient)
+
+
+    all_rewards = discount_norm_rewards(all_rewards, discount_rate)
+    feed_dict =  {}
+    

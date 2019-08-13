@@ -11,3 +11,6 @@ for _ in range(2):
     print("Observation ")
     print(observation)
     print("\n")
+    print("Reward")
+    print(reward)
+    print("\n)

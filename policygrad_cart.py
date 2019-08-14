@@ -72,7 +72,7 @@ with tf.Session() as sess:
     sess.run(init)
 
     for i in range(iter):
-        print("On iteration {}".format(iteration))
+        print("On iteration {}".format(iter))
         all_rewards = []
         all_gradients = []
 
@@ -99,4 +99,3 @@ with tf.Session() as sess:
 
     all_rewards = discount_norm_rewards(all_rewards, discount_rate)
     feed_dict =  {}
-    
